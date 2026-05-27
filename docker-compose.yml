@@ -1,0 +1,33 @@
+version: '3.9'
+
+services:
+
+  mysql:
+    image: mysql:8
+    container_name: mysql-container
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: foodapp
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  backend:
+    build: ./backend
+    container_name: flask-backend
+    restart: always
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mysql
+
+  frontend:
+    build: ./frontend
+    container_name: frontend-container
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
